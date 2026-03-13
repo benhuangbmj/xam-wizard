@@ -170,6 +170,7 @@ function processCsvFiles(folderPath, gradesByStudent) {
     .filter((name) => !name.toLowerCase().endsWith("_with_averages.csv"));
 
   const outputFiles = [];
+  const matchedXlsxNames = new Set();
 
   for (const csvFileName of csvFiles) {
     const csvPath = path.join(folderPath, csvFileName);
@@ -198,6 +199,7 @@ function processCsvFiles(folderPath, gradesByStudent) {
 
       if (grades.length > 0) {
         matchCount++;
+        matchedXlsxNames.add(normalized);
       }
 
       let average = null;
@@ -226,7 +228,7 @@ function processCsvFiles(folderPath, gradesByStudent) {
     outputFiles.push(outputPath);
   }
 
-  return { csvFiles, outputFiles };
+  return { csvFiles, outputFiles, matchedXlsxNames };
 }
 
 function main() {
@@ -237,7 +239,7 @@ function main() {
   }
 
   const { xlsxFiles, gradesByStudent } = buildStudentGradesMap(gradebookPath);
-  const { csvFiles, outputFiles } = processCsvFiles(
+  const { csvFiles, outputFiles, matchedXlsxNames } = processCsvFiles(
     gradebookPath,
     gradesByStudent,
   );
@@ -248,6 +250,20 @@ function main() {
 
   for (const outputFile of outputFiles) {
     console.log(`- ${outputFile}`);
+  }
+
+  const unmatchedXlsxNames = [...gradesByStudent.keys()].filter(
+    (name) => !matchedXlsxNames.has(name),
+  );
+  if (unmatchedXlsxNames.length > 0) {
+    console.log(
+      `\n${unmatchedXlsxNames.length} xlsx name(s) never matched in any CSV:`,
+    );
+    for (const name of unmatchedXlsxNames) {
+      console.log(`  "${name}"`);
+    }
+  } else {
+    console.log("\nAll xlsx names were matched in at least one CSV.");
   }
 }
 
