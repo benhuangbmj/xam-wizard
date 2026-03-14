@@ -42,7 +42,6 @@ function findNameColumns(row) {
   const keys = Object.keys(row || {});
   const keyLower = new Map(keys.map((k) => [k.toLowerCase(), k]));
 
-  // Look for combined "Last name, First name" format
   for (const key of keys) {
     const lowerKey = String(key).trim().toLowerCase();
     if (
@@ -53,7 +52,6 @@ function findNameColumns(row) {
     }
   }
 
-  // Look for simple "name" column
   const simpleNameKey = Array.from(keyLower.entries()).find(
     ([k]) => k === "name" || k === "student name",
   )?.[1];
@@ -61,7 +59,6 @@ function findNameColumns(row) {
     return { combined: simpleNameKey };
   }
 
-  // Look for separate "First" and "Last" columns
   const firstKey = Array.from(keyLower.entries()).find(
     ([k]) => k === "first" || k === "first name",
   )?.[1];
@@ -156,7 +153,10 @@ function buildStudentGradesMap(folderPath) {
 
   console.log(`\nBuilt grades map with ${gradesByStudent.size} students:`);
   for (const [name, grades] of gradesByStudent.entries()) {
-    const avg = (grades.reduce((a, b) => a + b, 0) / grades.length).toFixed(2);
+    const avg =
+      Math.round(
+        (grades.reduce((a, b) => a + b, 0) / grades.length / 100) * 4 * 2,
+      ) / 2;
     console.log(`  "${name}": ${grades.length} grades, avg=${avg}`);
   }
 
