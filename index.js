@@ -189,7 +189,7 @@ function processCsvFiles(folderPath, gradesByStudent) {
     console.log(`\nProcessing "${csvFileName}"`);
 
     const header = Object.keys(rows[0]);
-    const averageColumn = "Gradebook Average";
+    const averageColumn = "Score";
 
     let matchCount = 0;
     const outputRows = rows.map((row) => {
@@ -202,7 +202,7 @@ function processCsvFiles(folderPath, gradesByStudent) {
         matchedXlsxNames.add(normalized);
       }
 
-      let average = null;
+      let average = "M";
       if (grades.length > 0) {
         const sum = grades.reduce((acc, val) => acc + val, 0);
         average = Math.round(Number((sum / grades.length / 100) * 4) * 2) / 2;
